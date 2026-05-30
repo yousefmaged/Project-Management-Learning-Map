@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>خارطة طريق إدارة المشاريع</title>
+    <!-- Font Awesome 6 (مجاني ويدعم العربية) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
+            font-family: 'Tajawal', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 40px 20px;
+            color: #f8fafc;
+        }
+
+        /* الحاوية الرئيسية */
+        .roadmap-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(2px);
+            border-radius: 40px;
+            padding: 30px 20px;
+            box-shadow: 0 20px 35px -15px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        /* العنوان الرئيسي */
+        .main-title {
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .main-title h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #fff, #94a3f8);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 12px;
+        }
+
+        .main-title p {
+            color: #cbd5e1;
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .main-title i {
+            color: #6366f1;
+            margin-left: 10px;
+        }
+
+        /* ================= الخريطة الرئيسية (grid مرن) ================= */
+        .roadmap-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+        }
+
+        /* كل بطاقة مرحلة */
+        .stage-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(8px);
+            border-radius: 28px;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.3);
+        }
+
+        .stage-card:hover {
+            border-color: #6366f1;
+            box-shadow: 0 15px 30px -12px rgba(99, 102, 241, 0.3);
+            transform: translateY(-3px);
+        }
+
+        /* رأس المرحلة */
+        .stage-header {
+            padding: 20px 30px;
+            background: rgba(15, 23, 42, 0.6);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: 0.2s;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .stage-icon {
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4f46e5, #818cf8);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 0 12px rgba(79, 70, 229, 0.5);
+        }
+
+        .stage-title {
+            flex: 1;
+        }
+
+        .stage-title h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .stage-title .duration {
+            display: inline-block;
+            background: #334155;
+            padding: 4px 14px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            margin-top: 8px;
+            color: #cbd5e1;
+        }
+
+        .toggle-icon {
+            font-size: 1.6rem;
+            color: #94a3f8;
+            transition: transform 0.3s;
+        }
+
+        /* المحتوى الداخلي للمرحلة */
+        .stage-content {
+            padding: 0px 30px 25px 30px;
+            display: none;
+            transition: 0.2s;
+        }
+
+        .stage-card.active .stage-content {
+            display: block;
+        }
+
+        .stage-card.active .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        /* الأسبوعيات أو الأقسام التفصيلية */
+        .weeks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            gap: 18px;
+            margin-top: 25px;
+        }
+
+        .week-item {
+            background: #1e293b;
+            border-radius: 20px;
+            padding: 18px;
+            transition: all 0.2s;
+            border-right: 3px solid #6366f1;
+        }
+
+        .week-item:hover {
+            background: #2d3a5e;
+            transform: scale(0.98);
+        }
+
+        .week-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            color: #facc15;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .week-desc {
+            font-size: 0.9rem;
+            color: #cbd5e6;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .resources-list {
+            list-style: none;
+            margin-top: 12px;
+        }
+
+        .resources-list li {
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .resources-list li a {
+            color: #93c5fd;
+            text-decoration: none;
+            border-bottom: 1px dashed #6366f1;
+        }
+
+        .resources-list li a:hover {
+            color: white;
+        }
+
+        .badge {
+            background: #334155;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: #e2e8f0;
+        }
+
+        /* النوت السفلية */
+        .footer-note {
+            margin-top: 50px;
+            text-align: center;
+            background: #0f172a;
+            padding: 20px;
+            border-radius: 30px;
+            border: 1px solid #2d3a5e;
+            font-size: 0.9rem;
+            color: #a0afc6;
+        }
+
+        /* للأجهزة الصغيرة */
+        @media (max-width: 700px) {
+            .stage-header {
+                padding: 15px 20px;
+            }
+            .stage-title h2 {
+                font-size: 1.2rem;
+            }
+            .stage-icon {
+                width: 45px;
+                height: 45px;
+                font-size: 22px;
+            }
+            .weeks-grid {
+                grid-template-columns: 1fr;
+            }
+            .main-title h1 {
+                font-size: 1.7rem;
+            }
+        }
+
+        /* تذييل تفاعلي اختياري */
+        .interactive-hint {
+            margin-top: 25px;
+            background: #00000030;
+            padding: 12px;
+            border-radius: 26px;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="roadmap-container">
+    <div class="main-title">
+        <h1><i class="fas fa-chalkboard-user"></i> خارطة طريق إدارة المشاريع</h1>
+        <p>مسار تفاعلي من الصفر إلى الاحتراف — شهادات، مهارات، وفرص عمل في السعودية والخليج</p>
+    </div>
+
+    <div class="roadmap-grid" id="roadmapGrid">
+        <!-- سوف يتم تعبئة المراحل عبر JavaScript -->
+    </div>
+
+    <div class="footer-note">
+        <i class="fas fa-mouse-pointer"></i> اضغط على أي مرحلة لتوسيع التفاصيل | <i class="fas fa-link"></i> جميع المصادر محدثة لعام 2026 ومُجمعة خصيصاً لسوق العمل السعودي 
+        <div style="margin-top:8px;"><i class="fas fa-code-branch"></i> يمكنك تعديل المحتوى بكل مرونة — خريطة مفتوحة المصدر ومخصصة لتعلم إدارة المشاريع بأسلوب تفاعلي</div>
+    </div>
+</div>
+
+<script>
+    // بيانات الخريطة التفاعلية (تعكس التفاصيل الأسبوعية من الخطة الأصلية + تحسينات)
+    const roadmapData = [
+        {
+            name: "🧭 المرحلة 1: الأساسيات الإدارية والإقتصادية",
+            duration: "3 أشهر",
+            icon: "fa-solid fa-book-open",
+            weeks: [
+                { title: "الأسبوع 1-2: أساسيات الإدارة", desc: "مبادئ الإدارة، وظائف الإدارة، الهياكل التنظيمية.", resources: ["📘 مبادئ إدارة الأعمال (PDF)", "🎓 كورس 'مبادئ الإدارة' – إدراك", "✍️ تمرين: تحليل SWOT لشركة وهمية"] },
+                { title: "الأسبوع 3-4: اقتصاد وأعمال", desc: "مبادئ الاقتصاد الكلي والجزئي.", resources: ["📘 كتاب الاقتصاد في درس واحد", "🎓 كورس الاقتصاد – رواق", "📊 تحليل منحنيات الطلب والعرض"] },
+                { title: "الأسبوع 5-6: محاسبة للمدراء", desc: "قراءة القوائم المالية، أساسيات التكاليف.", resources: ["🎥 سلسلة المحاسبة للمبتدئين (يوتيوب)", "✍️ إعداد قائمة دخل لمشروع صغير", "📘 كتيب المحاسبة الإدارية مجاني"] },
+                { title: "الأسبوع 7-8: إحصاء وتحليل قرار", desc: "مفاهيم إحصائية وإستخدام Excel.", resources: ["🎓 كورس مبادئ الإحصاء – إدراك", "📘 التحليل في اتخاذ القرار PDF", "📉 تمارين على Google Sheets"] },
+                { title: "الأسبوع 9-10: تسويق وقانون", desc: "المزيج التسويقي 4Ps وقانون العقود.", resources: ["🎓 كورس التسويق للجميع – إدراك", "📘 أساسيات التسويق", "⚖️ تحليل عقد تجاري افتراضي"] },
+                { title: "الأسبوع 11-12: مشروع تطبيقي شامل", desc: "مراجعة شاملة + تحديد سوق العمل السعودي.", resources: ["✅ اختبارات شاملة", "📄 بناء سيرة ذاتية احترافية", "📌 منصة العمل التطوعي الوطنية"] }
+            ]
+        },
+        {
+            name: "⚙️ المرحلة 2: المهارات الإدارية وإدارة المشاريع",
+            duration: "4 أشهر",
+            icon: "fa-solid fa-people-group",
+            weeks: [
+                { title: "الأسبوع 1-2: الموارد البشرية والسلوك", desc: "إدارة الأفراد، ثقافة الشركات، حل النزاعات.", resources: ["🎓 كورس HR – إدراك", "🎓 السلوك التنظيمي (رواق)", "📋 تصميم هيكل تنظيمي"] },
+                { title: "الأسبوع 3-4: العمليات والجودة", desc: "إدارة العمليات، إنتاجية، الجودة الشاملة.", resources: ["📘 إدارة العمليات PDF", "🎥 قناة Lean Management", "📊 مشروع تحسين خدمة عملاء"] },
+                { title: "الأسبوع 5-6: القيادة والتواصل", desc: "مهارات العرض، التفاوض، القيادة.", resources: ["🎓 كورس القيادة والتأثير – رواق", "🎥 TED Talks بالعربية", "🎤 تسجيل عرض تقديمي"] },
+                { title: "الأسبوع 7-9: تطبيق عملي (Project Coordinator)", desc: "إدارة مشروع وهمي كامل.", resources: ["🗂️ Trello / Notion عمل بورتفوليو", "📅 تصميم جدول Gantt Chart", "📈 إدارة مخاطر باستخدام Excel"] },
+                { title: "الأسبوع 10-12: الاستعداد لشهادة CAPM", desc: "مراجعة دليل PMBOK وحل النماذج.", resources: ["📘 ملخص PMBOK 7 بالعربية", "🏅 نماذج اختبار CAPM مجانية", "🧠 خطة مراجعة أسبوعية"] }
+            ]
+        },
+        {
+            name: "📈 المرحلة 3: التخصص في إدارة المشاريع (PMI + Agile)",
+            duration: "3 شهور",
+            icon: "fa-solid fa-chart-line",
+            weeks: [
+                { title: "الأسبوع 1-2: منهجيات Agile و Scrum", desc: "الإطارات المرنة، أدوار سكرام.", resources: ["📘 دليل Scrum من Scrum.org", "🏅 شهادة Scrum Fundamentals", "🎥 شرح Kanban و Jira"] },
+                { title: "الأسبوع 3-4: إدارة المخاطر والعقود", desc: "سجل المخاطر، تخطيط الطوارئ، مشتريات.", resources: ["📘 دليل إدارة العقود PMI", "📊 إنشاء مصفوفة مخاطر لمشروع رقمي", "🧾 صياغة عقد افتراضي"] },
+                { title: "الأسبوع 5-6: أدوات متقدمة", desc: "MS Project, ClickUp, Power BI.", resources: ["🎥 فيديوهات MS Project المتقدمة", "📌 بورتفوليو على Notion", "📈 تقارير أداء المشروع"] },
+                { title: "الأسبوع 7-9: مشروع رقمنة التطوع", desc: "تصميم منصة تجميع المتطوعين (مشروع تخرج).", resources: ["📝 وثيقة نطاق المشروع", "🧠 WBS و Gantt", "🏁 تقديم خطة تنفيذية كاملة"] },
+                { title: "الأسبوع 10-12: مراجعة CAPM والحصول على الشهادة", desc: "تثبيت المفاهيم ودخول الامتحان.", resources: ["🔗 موقع PMI للتسجيل", "📝 500 سؤال تجريبي", "🎓 شهادة CAPM عالمية"] }
+            ]
+        },
+        {
+            name: "🌍 المرحلة 4: الخبرة العملية والتوظيف (السعودية والخليج)",
+            duration: "شهرين + متابعة",
+            icon: "fa-solid fa-briefcase",
+            weeks: [
+                { title: "الأسبوع 1-2: بناء الهوية المهنية", desc: "لينكد إن احترافي، سيرة ذاتية حديثة.", resources: ["✍️ نموذج سيرة لمدير مشاريع مبتدئ", "📸 صورة مهنية", "📂 بورتفوليو على Notion"] },
+                { title: "الأسبوع 3-4: التطوع الاحترافي", desc: "الحصول على خبرة ميدانية.", resources: ["🤝 منصة العمل التطوعي السعودية", "🤝 رابط التطوع مع PMI السعودية", "🧑‍🤝‍🧑 شهادات تطوعية رسمية"] },
+                { title: "الأسبوع 5-6: البحث عن وظيفة", desc: "التقديم على وظائف منسق/مساعد مدير مشاريع.", resources: ["💼 بيت.كوم، لينكد إن، وظف", "📑 10 طلبات أسبوعياً", "🎯 تخصيص رسائل التغطية"] },
+                { title: "الأسبوع 7-8: التحضير للمقابلات", desc: "أسئلة شائعة وتحليل حالات.", resources: ["🎤 أسئلة سلوكية وتقنية", "📄 دراسة حالة: إدارة مشروع متأخر", "💡 نصائح خبراء PMP"] }
+            ]
+        },
+        {
+            name: "💎 المرحلة 5: الاحترافية والتطوير المستمر",
+            duration: "بعد 12 شهر",
+            icon: "fa-solid fa-certificate",
+            weeks: [
+                { title: "تطوير إضافي: شهادات متقدمة", desc: "مثل PMP، PMI-ACP، PRINCE2.", resources: ["📌 التحضير لـ PMP بعد 3 سنوات خبرة", "📘 مواد PMI المجانية للأعضاء", "🌐 حضور مؤتمرات إدارة المشاريع"] },
+                { title: "الذكاء الاصطناعي في المشاريع", desc: "أدوات AI لتسهيل التخطيط.", resources: ["🤖 استخدام ChatGPT في التقارير", "📊 أدوات تحليل تنبؤي", "📚 دورات AI من Google"] },
+                { title: "التواصل المهني", desc: "مجموعات LinkedIn والفعاليات.", resources: ["🔗 الانضمام لمجموعة PMI KSA", "📅 حضور Eventbrite محلي", "🗣️ مشاركة المعرفة"] }
+            ]
+        }
+    ];
+
+    // دالة لإنشاء HTML للمراحل
+    function buildRoadmap() {
+        const container = document.getElementById('roadmapGrid');
+        if (!container) return;
+        container.innerHTML = '';
+        roadmapData.forEach((stage, idx) => {
+            const stageDiv = document.createElement('div');
+            stageDiv.className = 'stage-card';
+            // رأس المرحلة
+            const headerDiv = document.createElement('div');
+            headerDiv.className = 'stage-header';
+            headerDiv.innerHTML = `
+                <div class="stage-icon"><i class="${stage.icon}"></i></div>
+                <div class="stage-title">
+                    <h2>${stage.name}</h2>
+                    <span class="duration"><i class="fa-regular fa-calendar-alt"></i> ${stage.duration}</span>
+                </div>
+                <div class="toggle-icon"><i class="fas fa-chevron-down"></i></div>
+            `;
+            // محتوى المرحلة (الأسبوعيات)
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'stage-content';
+            let weeksHtml = `<div class="weeks-grid">`;
+            stage.weeks.forEach(week => {
+                const resourcesHtml = week.resources.map(res => `<li><i class="fa-regular fa-circle-check"></i> ${res}</li>`).join('');
+                weeksHtml += `
+                    <div class="week-item">
+                        <div class="week-title"><i class="fa-regular fa-calendar-week"></i> ${week.title}</div>
+                        <div class="week-desc">${week.desc}</div>
+                        <ul class="resources-list">
+                            ${resourcesHtml}
+                        </ul>
+                    </div>
+                `;
+            });
+            weeksHtml += `</div>`;
+            contentDiv.innerHTML = weeksHtml;
+
+            stageDiv.appendChild(headerDiv);
+            stageDiv.appendChild(contentDiv);
+            container.appendChild(stageDiv);
+
+            // إضافة حدث النقر لتوسيع/طي المرحلة
+            headerDiv.addEventListener('click', () => {
+                stageDiv.classList.toggle('active');
+            });
+            // جعل أول مرحلة مفتوحة بشكل افتراضي ليسهل الاطلاع
+            if(idx === 0) stageDiv.classList.add('active');
+        });
+    }
+
+    buildRoadmap();
+
+    // إضافة تأثير بسيط للهوية التفاعلية في console
+    console.log("✅ خريطة طريق إدارة المشاريع التفاعلية جاهزة – يمكنك مشاركتها أو تعديل البيانات بسهولة");
+</script>
+</body>
+  </html>
